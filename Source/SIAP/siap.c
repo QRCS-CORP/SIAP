@@ -140,7 +140,6 @@ const char* siap_get_error_description(siap_errors message)
 
 void siap_log_system_error(siap_errors err)
 {
-	char mtmp[SIAP_ERROR_STRING_WIDTH * 2] = { 0 };
 	const char* pmsg;
 
 	pmsg = siap_error_to_string(err);
