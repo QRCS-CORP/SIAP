@@ -8,7 +8,6 @@
 #include "memutils.h"
 #include "stringutils.h"
 
-
 static void server_print_line(const char* message)
 {
 	if (message != NULL)
