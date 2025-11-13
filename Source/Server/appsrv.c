@@ -374,17 +374,11 @@ static bool server_key_dialogue(void)
 
 int main(void)
 {
-	bool frt;
-	bool res;
-
 	server_print_banner();
 
-	frt = server_key_exists();
-	res = server_key_dialogue();
-
-	if (frt == true)
+	if (server_key_exists() == true)
 	{
-		if (res == true)
+		if (server_key_dialogue() == true)
 		{
 			server_print_message("Success! The device has been authenticated.");
 		}
@@ -395,7 +389,7 @@ int main(void)
 	}
 	else
 	{
-		if (res == true)
+		if (server_key_dialogue() == true)
 		{
 			server_print_message("Success! The server and device keys have been created, restart to test.");
 		}
