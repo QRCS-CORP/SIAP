@@ -377,6 +377,8 @@ int main(void)
 	bool frt;
 	bool res;
 
+	server_print_banner();
+
 	frt = server_key_exists();
 	res = server_key_dialogue();
 
