@@ -125,18 +125,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\SIAP\appsrv.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\SIAP\appsrv.c" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\QSC\QSC\QSC.vcxproj">
       <Project>{7b7f8e47-0f7c-4273-a229-a7ab2a452ea9}</Project>
     </ProjectReference>
     <ProjectReference Include="..\SIAP\SIAP.vcxproj">
       <Project>{78491df0-520e-4f10-af58-7402d1f4ba38}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="appsrv.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="appsrv.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
