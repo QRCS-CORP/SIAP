@@ -105,7 +105,7 @@ static bool server_get_path(char* fpath, size_t pathlen, const char* name)
 	return res;
 }
 
-static bool server_key_exists()
+static bool server_key_exists(void)
 {
 	char fpath[QSC_SYSTEM_MAX_PATH] = { 0 };
 	bool res;
@@ -123,7 +123,7 @@ static bool server_key_exists()
 	return res;
 }
 
-static void server_start_logger()
+static void server_start_logger(void)
 {
 	char fpath[QSC_SYSTEM_MAX_PATH] = { 0 };
 
@@ -131,7 +131,7 @@ static void server_start_logger()
 	siap_logger_initialize(fpath);
 }
 
-static bool server_key_dialogue()
+static bool server_key_dialogue(void)
 {
 	siap_device_key dkey = { 0 };
 	siap_device_tag dtag = { 0 };
