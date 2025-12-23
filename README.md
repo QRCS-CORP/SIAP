@@ -23,7 +23,6 @@
 [SIAP Protocol Specification](https://qrcs-corp.github.io/SIAP/pdf/siap_specification.pdf)  
 [SIAP Formal Analysis](https://qrcs-corp.github.io/SIAP/pdf/siap_formal.pdf)  
 [SIAP Implementation Analysis](https://qrcs-corp.github.io/SIAP/pdf/siap_analysis.pdf)  
-[SIAP Integration Guide](https://qrcs-corp.github.io/SIAP/pdf/siap_integration.pdf)  
 
 ## Overview
 
