@@ -19,8 +19,11 @@
 *A zero-certificate access mechanism that combines a memory card and a pass-phrase to authorize logins, decrypt storage, and key symmetric channels.*
 
 [SIAP Help Documentation](https://qrcs-corp.github.io/SIAP/)  
-[SIAP Protocol Specification](https://qrcs-corp.github.io/SATP/pdf/siap_specification.pdf)  
-[SIAP Summary Document](https://qrcs-corp.github.io/SATP/pdf/siap_summary.pdf)
+[SIAP Summary Document](https://qrcs-corp.github.io/SIAP/pdf/siap_summary.pdf)  
+[SIAP Protocol Specification](https://qrcs-corp.github.io/SIAP/pdf/siap_specification.pdf)  
+[SIAP Formal Analysis](https://qrcs-corp.github.io/SIAP/pdf/siap_formal.pdf)  
+[SIAP Implementation Analysis](https://qrcs-corp.github.io/SIAP/pdf/siap_analysis.pdf)  
+[SIAP Integration Guide](https://qrcs-corp.github.io/SIAP/pdf/siap_integration.pdf)  
 
 ## Overview
 
@@ -102,9 +105,10 @@ Sample AVX flags:
 
 ## License
 
-ACQUISITION INQUIRIES:  
-QRCS is currently seeking a corporate acquirer for this technology.  
-Parties interested in exclusive licensing or acquisition should contact: contact@qrcscorp.ca
+INVESTMENT INQUIRIES:
+QRCS is currently seeking a corporate investor for this technology.
+Parties interested in licensing or investment should connect to us at: contact@qrcscorp.ca  
+Visit https://www.qrcscorp.ca for a full inventory of our products and services.  
 
 PATENT NOTICE:  
 One or more patent applications (provisional and/or non-provisional) covering aspects of this software have been filed with the United States Patent and  
