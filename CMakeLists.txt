@@ -22,7 +22,7 @@ FetchContent_MakeAvailable(QSC)
 
 # SIAP Static Library
 file(GLOB_RECURSE SIAP_SOURCES "Source/SIAP/*.c")
-file(GLOB_RECURSE SIAP_HEADERS "Source/SIAP/include/*.h")
+file(GLOB_RECURSE SIAP_HEADERS "Source/SIAP/*.h")
 
 add_library(siap STATIC ${SIAP_SOURCES} ${SIAP_HEADERS})
 target_include_directories(siap PUBLIC "Source/SIAP")
