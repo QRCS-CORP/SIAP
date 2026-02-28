@@ -130,6 +130,11 @@ static void server_start_logger(void)
 	siap_logger_initialize(fpath);
 }
 
+static void server_stop_logger(void)
+{
+	siap_logger_dispose();
+}
+
 static bool server_key_dialogue(void)
 {
 	siap_device_key dkey = { 0 };
@@ -205,6 +210,14 @@ static bool server_key_dialogue(void)
 
 							/* authenticate the key; the output token can be used as a symmetric key */
 							err = siap_server_authenticate_device(dtok, &dkey, &dtag, &skey, phash);
+
+							/* log a failure */
+							if (err != siap_error_none)
+							{
+								siap_log_system_error(err);
+								res = false;
+							}
+
 							/* log the outcome */
 							siap_log_system_error(err);
 
@@ -240,14 +253,14 @@ static bool server_key_dialogue(void)
 			}
 
 			/* cleanup */
-			qsc_memutils_clear(&dkey, sizeof(dkey));
-			qsc_memutils_clear(&dtag, sizeof(dtag));
-			qsc_memutils_clear(&skey, sizeof(skey));
-			qsc_memutils_clear(upass, sizeof(upass));
-			qsc_memutils_clear(&dskey, sizeof(dskey));
-			qsc_memutils_clear(dstag, sizeof(dstag));
-			qsc_memutils_clear(phash, sizeof(phash));
-			qsc_memutils_clear(sskey, sizeof(sskey));
+			qsc_memutils_secure_erase(&dkey, sizeof(dkey));
+			qsc_memutils_secure_erase(&dtag, sizeof(dtag));
+			qsc_memutils_secure_erase(&skey, sizeof(skey));
+			qsc_memutils_secure_erase(upass, sizeof(upass));
+			qsc_memutils_secure_erase(&dskey, sizeof(dskey));
+			qsc_memutils_secure_erase(dstag, sizeof(dstag));
+			qsc_memutils_secure_erase(phash, sizeof(phash));
+			qsc_memutils_secure_erase(sskey, sizeof(sskey));
 		}
 		else
 		{
@@ -352,15 +365,15 @@ static bool server_key_dialogue(void)
 			}
 
 			/* cleanup */
-			qsc_memutils_clear(&dkey, sizeof(dkey));
-			qsc_memutils_clear(&dtag, sizeof(dtag));
-			qsc_memutils_clear(&skey, sizeof(skey));
-			qsc_memutils_clear(upass, sizeof(upass));
-			qsc_memutils_clear(dskey, sizeof(dskey));
-			qsc_memutils_clear(dstag, sizeof(dstag));
-			qsc_memutils_clear(keyid, sizeof(keyid));
-			qsc_memutils_clear(phash, sizeof(phash));
-			qsc_memutils_clear(sskey, sizeof(sskey));
+			qsc_memutils_secure_erase(&dkey, sizeof(dkey));
+			qsc_memutils_secure_erase(&dtag, sizeof(dtag));
+			qsc_memutils_secure_erase(&skey, sizeof(skey));
+			qsc_memutils_secure_erase(upass, sizeof(upass));
+			qsc_memutils_secure_erase(dskey, sizeof(dskey));
+			qsc_memutils_secure_erase(dstag, sizeof(dstag));
+			qsc_memutils_secure_erase(keyid, sizeof(keyid));
+			qsc_memutils_secure_erase(phash, sizeof(phash));
+			qsc_memutils_secure_erase(sskey, sizeof(sskey));
 		}
 		else
 		{
@@ -399,6 +412,7 @@ int main(void)
 		}
 	}
 
+	server_stop_logger();
 	server_print_message("Press any key to close...");
 	qsc_consoleutils_get_wait();
 

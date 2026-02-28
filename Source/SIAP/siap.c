@@ -112,26 +112,35 @@ void siap_serialize_server_key(uint8_t* output, const siap_server_key* skey)
 
 void siap_increment_device_key(siap_device_key* dkey)
 {
+	SIAP_ASSERT(dkey != NULL);
+
 	uint32_t ctr;
 
-	/* get the key id */
-	ctr = qsc_intutils_be8to32(dkey->kid + SIAP_DID_SIZE);
-	/* clear the key at the current position */
-	qsc_memutils_clear(dkey->ktree + (ctr * SIAP_AUTHENTICATION_TOKEN_SIZE), SIAP_AUTHENTICATION_TOKEN_SIZE);
-	/* increment and write the new key index to the kid */
-	++ctr;
-	qsc_intutils_be32to8(dkey->kid + SIAP_DID_SIZE, ctr);
+	if (dkey != NULL)
+	{
+		/* get the key id */
+		ctr = qsc_intutils_be8to32(dkey->kid + SIAP_DID_SIZE);
+
+		if (ctr < SIAP_KTREE_COUNT)
+		{
+			/* clear the key at the current position */
+			qsc_memutils_secure_erase(dkey->ktree + (ctr * SIAP_AUTHENTICATION_TOKEN_SIZE), SIAP_AUTHENTICATION_TOKEN_SIZE);
+			/* increment and write the new key index to the kid */
+			++ctr;
+			qsc_intutils_be32to8(dkey->kid + SIAP_DID_SIZE, ctr);
+		}
+	}
 }
 
-const char* siap_get_error_description(siap_errors message)
+const char* siap_get_error_description(siap_errors emsg)
 {
 	const char* dsc;
 
 	dsc = NULL;
 
-	if (message < SIAP_ERROR_STRING_DEPTH && message >= 0)
+	if ((uint32_t)emsg < SIAP_ERROR_STRING_DEPTH)
 	{
-		dsc = SIAP_ERROR_STRINGS[(size_t)message];
+		dsc = SIAP_ERROR_STRINGS[(uint32_t)emsg];
 
 	}
 

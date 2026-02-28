@@ -107,6 +107,17 @@ static const char SIAP_LOGGER_FILE[] = "siap.log";
 static const char SIAP_LOGGER_HEAD[] = "SIAP Version 1.1a";
 
 /**
+ * \brief Dispose of the logger.
+ *
+ * \details
+ * Flushes any pending state, destroys the mutex created during initialisation,
+ * and resets all internal logger state. This function must be called once when
+ * the logging subsystem is no longer required, typically at application shutdown.
+ * Calling any other logger function after dispose results in undefined behaviour.
+ */
+void siap_logger_dispose(void);
+
+/**
  * \brief Check if the SIAP log file exists.
  *
  * \details
@@ -179,23 +190,5 @@ size_t siap_logger_size(void);
  * \return Returns true if the message was successfully written to the log file; otherwise, false.
  */
 bool siap_logger_write(const char* message);
-
-/**
- * \brief Run a manual test of the SIAP logger functions.
- *
- * \details
- * This function performs a series of tests on the SIAP logging subsystem. The test routine includes:
- *
- * - Initializing the logger with a test path.
- * - Writing one or more test messages to the log.
- * - Reading and printing the log content.
- * - Resetting the log and verifying that it has been cleared.
- * - Checking the reported log file size.
- *
- * The function returns true if all logger operations work as expected.
- *
- * \return Returns true if all logger tests succeed; otherwise, false.
- */
-bool siap_logger_test(void);
 
 #endif

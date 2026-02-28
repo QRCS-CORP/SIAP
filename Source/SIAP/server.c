@@ -12,99 +12,117 @@
 
 siap_errors siap_server_authenticate_device(uint8_t* dtok, siap_device_key* dkey, siap_device_tag* dtag, const siap_server_key* skey, const uint8_t* phash)
 {
+	SIAP_ASSERT(dtok != NULL);
+	SIAP_ASSERT(dkey != NULL);
+	SIAP_ASSERT(dtag != NULL);
+	SIAP_ASSERT(skey != NULL);
+	SIAP_ASSERT(phash != NULL);
+
 	uint8_t stok[SIAP_AUTHENTICATION_TOKEN_SIZE] = { 0U };
 	siap_errors err;
 	bool res;
 
-	err = siap_error_none;
-
-	/* start by comparing the device kid with the tag kid */
-	res = qsc_memutils_are_equal(dkey->kid, dtag->kid, SIAP_KID_SIZE);
-
-	if (res == true)
+	if (dtok != NULL && dkey != NULL && dtag != NULL && skey != NULL && phash != NULL)
 	{
-		/* check for a valid expiration time */
-		res = (dkey->expiration <= skey->expiration && dkey->expiration <= (qsc_timestamp_epochtime_seconds() + SIAP_KEY_DURATION_SECONDS));
+		/* start by comparing the device kid with the tag kid */
+		res = qsc_memutils_are_equal(dkey->kid, dtag->kid, SIAP_KID_SIZE);
 
 		if (res == true)
 		{
-			/* verify the passphrase hash */
-			res = (qsc_intutils_verify(dtag->phash, phash, SIAP_HASH_SIZE) == 0U);
+			uint64_t tnow;
+
+			tnow = qsc_timestamp_epochtime_seconds();
+
+			/* check for a valid expiration time */
+			res = (dkey->expiration <= skey->expiration &&
+				dkey->expiration > tnow &&
+				dkey->expiration <= (qsc_timestamp_epochtime_seconds() + SIAP_KEY_DURATION_SECONDS));
 
 			if (res == true)
 			{
-				/* decrypt the device key */
-				res = siap_server_decrypt_device_key(dkey, skey, dtag->phash);
+				/* verify the passphrase hash */
+				res = (qsc_intutils_verify(dtag->phash, phash, SIAP_HASH_SIZE) == 0U);
 
 				if (res == true)
 				{
-					/* verify the token key tree is unaltered */
-					res = siap_server_verify_device_tag(dtag, dkey);
+					/* decrypt the device key */
+					res = siap_server_decrypt_device_key(dkey, skey, dtag->phash);
 
 					if (res == true)
 					{
-						/* extract the authentication token from the device key */
-						res = siap_server_extract_authentication_token(dtok, dkey, skey);
+						/* verify the token key tree is unaltered */
+						res = siap_server_verify_device_tag(dtag, dkey);
 
 						if (res == true)
 						{
-							/* generate a token at the server and compare */
-							res = siap_server_generate_authentication_token(stok, dtag, skey);
+							/* extract the authentication token from the device key */
+							res = siap_server_extract_authentication_token(dtok, dkey, skey);
 
 							if (res == true)
 							{
-								res = qsc_memutils_are_equal(dtok, stok, SIAP_AUTHENTICATION_TOKEN_SIZE);
-
-								/* cleanup */
-								qsc_memutils_clear(stok, SIAP_AUTHENTICATION_TOKEN_SIZE);
+								/* generate a token at the server and compare */
+								res = siap_server_generate_authentication_token(stok, dtag, skey);
 
 								if (res == true)
 								{
-									/* important! make sure to re-save both of these structures to file */
+									res = qsc_memutils_are_equal(dtok, stok, SIAP_AUTHENTICATION_TOKEN_SIZE);
 
-									/* update the device tag */
-									siap_server_generate_device_tag(dtag, dkey, phash);
-									/* encrypt the device key */
-									siap_server_encrypt_device_key(dkey, skey, phash);
+									/* cleanup */
+									qsc_memutils_secure_erase(stok, SIAP_AUTHENTICATION_TOKEN_SIZE);
+
+									if (res == true)
+									{
+										/* important! make sure to re-save both of these structures to file */
+
+										/* update the device tag */
+										siap_server_generate_device_tag(dtag, dkey, phash);
+										/* encrypt the device key */
+										siap_server_encrypt_device_key(dkey, skey, phash);
+										err = siap_error_none;
+									}
+									else
+									{
+										err = siap_error_authentication_failure;
+									}
 								}
 								else
 								{
-									err = siap_error_authentication_failure;
+									err = siap_error_token_not_created;
 								}
 							}
 							else
 							{
-								err = siap_error_token_not_created;
+								err = siap_error_token_invalid;
 							}
 						}
 						else
 						{
-							err = siap_error_token_invalid;
+							err = siap_error_decryption_failure;
 						}
 					}
 					else
 					{
-						err = siap_error_decryption_failure;
+						err = siap_error_token_tree_invalid;
 					}
 				}
 				else
 				{
-					err = siap_error_token_tree_invalid;
+					err = siap_error_passphrase_unrecognized;
 				}
 			}
 			else
 			{
-				err = siap_error_passphrase_unrecognized;
+				err = siap_error_key_expired;
 			}
 		}
 		else
 		{
-			err = siap_error_key_expired;
+			err = siap_error_identity_mismatch;
 		}
 	}
 	else
 	{
-		err = siap_error_identity_mismatch;
+		err = siap_error_invalid_input;
 	}
 
 	return err;
@@ -179,8 +197,8 @@ bool siap_server_decrypt_device_key(siap_device_key* dkey, const siap_server_key
 		}
 
 		/* cleanup */
-		qsc_memutils_clear(dect, sizeof(dect));
-		qsc_memutils_clear(pkey, sizeof(pkey));
+		qsc_memutils_secure_erase(dect, sizeof(dect));
+		qsc_memutils_secure_erase(pkey, sizeof(pkey));
 		qsc_rcs_dispose(&rstate);
 	}
 
@@ -211,13 +229,13 @@ void siap_server_encrypt_device_key(siap_device_key* dkey, const siap_server_key
 		/* initialize the cipher */
 		qsc_rcs_initialize(&rstate, &kp, true);
 		/* encrypt the token tree */
-		qsc_rcs_transform(&rstate, enkt, dkey->ktree, SIAP_KTREE_SIZE);
+		(void)qsc_rcs_transform(&rstate, enkt, dkey->ktree, SIAP_KTREE_SIZE);
 		/* copy to device key token-tree */
 		qsc_memutils_copy(dkey->ktree, enkt, SIAP_KTREE_SIZE + SIAP_MAC_SIZE);
 
 		/* cleanup */
-		qsc_memutils_clear(enkt, sizeof(enkt));
-		qsc_memutils_clear(pkey, sizeof(pkey));
+		qsc_memutils_secure_erase(enkt, sizeof(enkt));
+		qsc_memutils_secure_erase(pkey, sizeof(pkey));
 		qsc_rcs_dispose(&rstate);
 	}
 }
@@ -242,7 +260,7 @@ bool siap_server_extract_authentication_token(uint8_t* token, siap_device_key* d
 		{
 			/* copy the token and clear it from the tree */
 			qsc_memutils_copy(token, dkey->ktree + (kidx * SIAP_AUTHENTICATION_TOKEN_SIZE), SIAP_AUTHENTICATION_TOKEN_SIZE);
-			qsc_memutils_clear(dkey->ktree + (kidx * SIAP_AUTHENTICATION_TOKEN_SIZE), SIAP_AUTHENTICATION_TOKEN_SIZE);
+			qsc_memutils_secure_erase(dkey->ktree + (kidx * SIAP_AUTHENTICATION_TOKEN_SIZE), SIAP_AUTHENTICATION_TOKEN_SIZE);
 			/* increment the kid counter */
 			qsc_intutils_be8increment(dkey->kid + SIAP_DID_SIZE, SIAP_KEY_ID_SIZE);
 			res = true;
@@ -328,7 +346,7 @@ bool siap_server_generate_server_key(siap_server_key* skey, const uint8_t* sid)
 
 			/* generate the salt */
 #if defined(SIAP_EXTENDED_ENCRYPTION)
-			qsc_cshake512_compute(skey->dsalt, SIAP_SALT_SIZE, skey->kbase, SIAP_SERVER_KEY_SIZE, (uint8_t*)SIAP_CONFIG_STRING, SIAP_CONFIG_SIZE, sid, SIAP_SID_SIZE);
+			qsc_cshake512_compute(skey->dsalt, SIAP_SALT_SIZE, skey->kbase, SIAP_SERVER_KEY_SIZE, (uint8_t*)SIAP_CONFIG_STRING, SIAP_CONFIG_SIZE, skey->sid, SIAP_SID_SIZE);
 #else
 			qsc_cshake256_compute(skey->dsalt, SIAP_SALT_SIZE, skey->kbase, SIAP_SERVER_KEY_SIZE, (uint8_t*)SIAP_CONFIG_STRING, SIAP_CONFIG_SIZE, skey->sid, SIAP_SID_SIZE);
 #endif
@@ -367,7 +385,7 @@ void siap_server_passphrase_generate(char* passphrase, size_t length)
 				}
 			}
 
-			qsc_memutils_clear(trnd, sizeof(trnd));
+			qsc_memutils_secure_erase(trnd, sizeof(trnd));
 		}
 	}
 }
@@ -381,7 +399,7 @@ void siap_server_passphrase_hash_generate(uint8_t* phash, const char* passphrase
 
 	if (phash != NULL && passphrase != NULL)
 	{
-		qsc_scb_initialize(&sscb, (uint8_t*)passphrase, passlen, NULL, 0U, 1U, 1U);
+		qsc_scb_initialize(&sscb, (uint8_t*)passphrase, passlen, NULL, 0U, SIAP_SCB_CPU_COST, SIAP_SCB_MEMORY_COST);
 		qsc_scb_generate(&sscb, phash, SIAP_HASH_SIZE);
 		qsc_scb_dispose(&sscb);
 	}
@@ -393,13 +411,17 @@ bool siap_server_passphrase_hash_verify(const uint8_t* phash, const char* passph
 	SIAP_ASSERT(passphrase != NULL);
 
 	uint8_t tmph[SIAP_HASH_SIZE] = { 0U };
+	bool res;
+
+	res = false;
 
 	if (phash != NULL && passphrase != NULL)
 	{
 		siap_server_passphrase_hash_generate(tmph, passphrase, passlen);
+		res = (qsc_intutils_verify(tmph, phash, SIAP_HASH_SIZE) == 0U);
 	}
 
-	return (qsc_intutils_verify(tmph, phash, SIAP_HASH_SIZE) == 0U);
+	return res;
 }
 
 bool siap_server_verify_device_tag(siap_device_tag* dtag, const siap_device_key* dkey)

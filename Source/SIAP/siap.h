@@ -294,6 +294,30 @@
 */
 #define SIAP_SERVER_KEY_ENCODED_SIZE (SIAP_SERVER_KEY_SIZE + SIAP_SID_SIZE + SIAP_SALT_SIZE + SIAP_EXPIRATION_SIZE)
 
+/*!
+ * \def SIAP_SCB_CPU_COST
+ * \brief The SCB passphrase KDF CPU Cost factor.
+ *
+ * \details Adjust this parameter according to your hardware and security needs.
+ * Benchmark to ensure ~200 ms per hash on the server CPU.
+ * Changing this parameter effects the number of total iterations the hash function
+ * and memory expansion function undergoes.
+ * Recommended no more than 4 on most server security profiles.
+ */
+#define SIAP_SCB_CPU_COST 1U
+
+/*!
+ * \def SIAP_SCB_MEMORY_COST
+ * \brief The SCB passphrase KDF Memory Cost factor.
+ * 
+ * \details Adjust this parameter according to your hardware and security needs.
+ * Benchmark to ensure ~200 ms per hash on the server CPU.
+ * Recommended no more than 8 on most server security profiles.
+ * This parameter is a memory multiplier and effects the amount of memory 
+ * allocated by the SCB hashing function
+ */
+#define SIAP_SCB_MEMORY_COST 1U
+
 /* error code strings */
 
 #if defined(SIAP_EXTENDED_ENCRYPTION)
@@ -309,7 +333,7 @@ static const char SIAP_CONFIG_STRING[SIAP_CONFIG_SIZE + 1U] = "r02-siap-rcs256-k
 #endif
 
 /** \cond */
-#define SIAP_ERROR_STRING_DEPTH 12U
+#define SIAP_ERROR_STRING_DEPTH 13U
 #define SIAP_ERROR_STRING_WIDTH 128U
 
 static const char SIAP_ERROR_STRINGS[SIAP_ERROR_STRING_DEPTH][SIAP_ERROR_STRING_WIDTH] =
@@ -317,6 +341,7 @@ static const char SIAP_ERROR_STRINGS[SIAP_ERROR_STRING_DEPTH][SIAP_ERROR_STRING_
 	"The operation was succesful",
 	"The authentication has failed",
 	"The identity strings do not match",
+	"The function received invalid input",
 	"The key card has expired",
 	"The device passphrase is unrecognized",
 	"The cards authentication tokens are invalid",
@@ -339,15 +364,16 @@ SIAP_EXPORT_API typedef enum siap_errors
 	siap_error_none = 0x00U,					/*!< The operation was succesful */
 	siap_error_authentication_failure = 0x01U,	/*!< The authentication has failed */
 	siap_error_identity_mismatch = 0x02U,		/*!< The identity strings do not match */
-	siap_error_key_expired = 0x03U,				/*!< The key card has expired */
-	siap_error_passphrase_unrecognized = 0x04U,	/*!< The device passphrase is unrecognized */
-	siap_error_token_tree_invalid = 0x05U,		/*!< The cards authentication tokens are invalid */
-	siap_error_decryption_failure = 0x06U,		/*!< The key card decryption failed */
-	siap_error_token_invalid = 0x07U,			/*!< The authentication token is invalid */
-	siap_error_token_not_created = 0x08U,		/*!< The server could not generate the token */
-	siap_error_file_read_failure = 0x09U,		/*!< The file could not be read */
-	siap_error_file_invalid_path = 0x0AU,		/*!< The file path specified is invalid */
-	siap_error_file_copy_failure = 0x0BU		/*!< The file is locked or unavailable */
+	siap_error_invalid_input = 0x03U,			/*!< The function received invalid input */
+	siap_error_key_expired = 0x04U,				/*!< The key card has expired */
+	siap_error_passphrase_unrecognized = 0x05U,	/*!< The device passphrase is unrecognized */
+	siap_error_token_tree_invalid = 0x06U,		/*!< The cards authentication tokens are invalid */
+	siap_error_decryption_failure = 0x07U,		/*!< The key card decryption failed */
+	siap_error_token_invalid = 0x08U,			/*!< The authentication token is invalid */
+	siap_error_token_not_created = 0x09U,		/*!< The server could not generate the token */
+	siap_error_file_read_failure = 0x0AU,		/*!< The file could not be read */
+	siap_error_file_invalid_path = 0x0BU,		/*!< The file path specified is invalid */
+	siap_error_file_copy_failure = 0x0CU		/*!< The file is locked or unavailable */
 } siap_errors;
 
 /*!
