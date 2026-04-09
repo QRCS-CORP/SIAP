@@ -81,7 +81,7 @@ Every successful login burns exactly one leaf key. A burned leaf cannot be recov
 | **KMAC-256** *(optional)* | Message authentication | Tag-forgery probability ≤ 2⁻¹²⁸ |
 | **RCS-256** *(optional)* | AEAD for payload or symmetric channel | ≥ 2¹²⁸ (Grover-bounded) |
 
-The key tree is generated deterministically on the server using `cSHAKE-256(K_base, config_string, device_id || index)`. The server never needs to store the plaintext tree — it can re-derive any leaf at any index on demand. The device key file stores the full tree, encrypted and MAC-protected under a key derived from the user passphrase and a per-server salt.
+The key tree is generated deterministically on the server using `cSHAKE-256(K_base, config_string, device_id || index)`. The server never needs to store the plaintext tree — it can re-derive any leaf at any index on demand. The device key file stores the full tree, encrypted and MAC-protected under a key derived from the user passphrase and a per-server salt. 
 
 ---
 
