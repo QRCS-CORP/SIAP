@@ -91,7 +91,7 @@ The reference implementation can be run on a single machine to explore enrollmen
 
 ### First Run — Server Initialization
 
-On the very first launch the server detects no existing key material and walks through a guided setup. The session below shows the complete enrollment process:
+On the very first launch the server detects no existing key material and walks through a guided setup. The session below shows the complete enrollment process: 
 
 ```
 server> The server-key was not detected, generating new server/device keys.
