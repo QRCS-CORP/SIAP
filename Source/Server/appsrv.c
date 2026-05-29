@@ -176,6 +176,7 @@ static bool server_authenticate_existing_key(void)
 
 	res = false;
 	err = siap_error_invalid_input;
+	len = 0U;
 
 	server_get_path(fpath, sizeof(fpath), SIAP_SERVER_KEY_NAME);
 	res = qsc_fileutils_copy_file_to_stream(fpath, (char*)sskey, sizeof(sskey));
@@ -298,6 +299,7 @@ static bool server_generate_new_keyset(void)
 
 	server_print_message("The server-key was not detected, generating new server/device keys.");
 	ctr = 0U;
+	len = 0U;
 	res = false;
 
 	while (ctr < 3U)
