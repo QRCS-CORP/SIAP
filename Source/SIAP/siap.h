@@ -86,7 +86,7 @@
 * \def SIAP_CONFIG_SIZE
 * \brief The size of the protocol configuration string.
 */
-#define SIAP_CONFIG_SIZE 24U
+#define SIAP_CONFIG_SIZE 25U
 
 /*!
 * \def SIAP_DEVICE_ID_SIZE
