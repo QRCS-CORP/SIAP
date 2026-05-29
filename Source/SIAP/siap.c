@@ -4,82 +4,113 @@
 #include "memutils.h"
 #include "timestamp.h"
 
-void siap_deserialize_device_key(siap_device_key* dkey, const uint8_t* input)
+bool siap_deserialize_device_key(siap_device_key* dkey, const uint8_t* input, size_t inputlen)
 {
 	SIAP_ASSERT(dkey != NULL);
 	SIAP_ASSERT(input != NULL);
 
 	size_t pos;
+	bool res;
 
-	if (dkey != NULL && input != NULL)
+	res = false;
+
+	if (dkey != NULL && input != NULL && inputlen >= SIAP_DEVICE_KEY_ENCODED_SIZE)
 	{
 		qsc_memutils_copy(dkey->ktree, input, SIAP_KTREE_SIZE + SIAP_MAC_SIZE);
 		pos = SIAP_KTREE_SIZE + SIAP_MAC_SIZE;
 		qsc_memutils_copy(dkey->kid, input + pos, SIAP_KID_SIZE);
 		pos += SIAP_KID_SIZE;
 		dkey->expiration = qsc_intutils_le8to64(input + pos);
+		res = true;
 	}
+
+	return res;
 }
 
-void siap_serialize_device_key(uint8_t* output, const siap_device_key* dkey)
+
+bool siap_serialize_device_key(uint8_t* output, size_t outputlen, const siap_device_key* dkey)
 {
 	SIAP_ASSERT(output != NULL);
 	SIAP_ASSERT(dkey != NULL);
 
 	size_t pos;
+	bool res;
 
-	if (output != NULL && dkey != NULL)
+	res = false;
+
+	if (output != NULL && dkey != NULL && outputlen >= SIAP_DEVICE_KEY_ENCODED_SIZE)
 	{
 		qsc_memutils_copy(output, dkey->ktree, SIAP_KTREE_SIZE + SIAP_MAC_SIZE);
 		pos = SIAP_KTREE_SIZE + SIAP_MAC_SIZE;
 		qsc_memutils_copy(output + pos, dkey->kid, SIAP_KID_SIZE);
 		pos += SIAP_KID_SIZE;
 		qsc_intutils_le64to8(output + pos, dkey->expiration);
+		res = true;
 	}
+
+	return res;
 }
 
-void siap_deserialize_device_tag(siap_device_tag* dtag, const uint8_t* input)
+
+bool siap_deserialize_device_tag(siap_device_tag* dtag, const uint8_t* input, size_t inputlen)
 {
 	SIAP_ASSERT(dtag != NULL);
 	SIAP_ASSERT(input != NULL);
 
 	size_t pos;
+	bool res;
 
-	if (dtag != NULL && input != NULL)
+	res = false;
+
+	if (dtag != NULL && input != NULL && inputlen >= SIAP_DEVICE_TAG_ENCODED_SIZE)
 	{
 		qsc_memutils_copy(dtag->kid, input, SIAP_KID_SIZE);
 		pos = SIAP_KID_SIZE;
 		qsc_memutils_copy(dtag->khash, input + pos, SIAP_KTAG_STATE_HASH);
 		pos += SIAP_KTAG_STATE_HASH;
 		qsc_memutils_copy(dtag->phash, input + pos, SIAP_HASH_SIZE);
+		res = true;
 	}
+
+	return res;
 }
 
-void siap_serialize_device_tag(uint8_t* output, const siap_device_tag* dtag)
+
+bool siap_serialize_device_tag(uint8_t* output, size_t outputlen, const siap_device_tag* dtag)
 {
 	SIAP_ASSERT(output != NULL);
 	SIAP_ASSERT(dtag != NULL);
 
 	size_t pos;
+	bool res;
 
-	if (output != NULL && dtag != NULL)
+	res = false;
+
+	if (output != NULL && dtag != NULL && outputlen >= SIAP_DEVICE_TAG_ENCODED_SIZE)
 	{
 		qsc_memutils_copy(output, dtag->kid, SIAP_KID_SIZE);
 		pos = SIAP_KID_SIZE;
 		qsc_memutils_copy(output + pos, dtag->khash, SIAP_KTAG_STATE_HASH);
 		pos += SIAP_KTAG_STATE_HASH;
 		qsc_memutils_copy(output + pos, dtag->phash, SIAP_HASH_SIZE);
+		res = true;
 	}
+
+	return res;
 }
 
-void siap_deserialize_server_key(siap_server_key* skey, const uint8_t* input)
+
+bool siap_deserialize_server_key(siap_server_key* skey, const uint8_t* input, size_t inputlen)
 {
 	SIAP_ASSERT(skey != NULL);
 	SIAP_ASSERT(input != NULL);
 
 	size_t pos;
+	bool res;
 
-	if (skey != NULL && input != NULL)
+	res = false;
+
+	if (skey != NULL && input != NULL && inputlen >= SIAP_SERVER_KEY_ENCODED_SIZE)
 	{
 		qsc_memutils_copy(skey->kbase, input, SIAP_SERVER_KEY_SIZE);
 		pos = SIAP_SERVER_KEY_SIZE;
@@ -88,17 +119,24 @@ void siap_deserialize_server_key(siap_server_key* skey, const uint8_t* input)
 		qsc_memutils_copy(skey->dsalt, input + pos, SIAP_SALT_SIZE);
 		pos += SIAP_SALT_SIZE;
 		skey->expiration = qsc_intutils_le8to64(input + pos);
+		res = true;
 	}
+
+	return res;
 }
 
-void siap_serialize_server_key(uint8_t* output, const siap_server_key* skey)
+
+bool siap_serialize_server_key(uint8_t* output, size_t outputlen, const siap_server_key* skey)
 {
 	SIAP_ASSERT(output != NULL);
 	SIAP_ASSERT(skey != NULL);
 
 	size_t pos;
+	bool res;
 
-	if (output != NULL && skey != NULL)
+	res = false;
+
+	if (output != NULL && skey != NULL && outputlen >= SIAP_SERVER_KEY_ENCODED_SIZE)
 	{
 		qsc_memutils_copy(output, skey->kbase, SIAP_SERVER_KEY_SIZE);
 		pos = SIAP_SERVER_KEY_SIZE;
@@ -107,8 +145,12 @@ void siap_serialize_server_key(uint8_t* output, const siap_server_key* skey)
 		qsc_memutils_copy(output + pos, skey->dsalt, SIAP_SALT_SIZE);
 		pos += SIAP_SALT_SIZE;
 		qsc_intutils_le64to8(output + pos, skey->expiration);
+		res = true;
 	}
+
+	return res;
 }
+
 
 void siap_increment_device_key(siap_device_key* dkey)
 {
@@ -124,7 +166,7 @@ void siap_increment_device_key(siap_device_key* dkey)
 		if (ctr < SIAP_KTREE_COUNT)
 		{
 			/* clear the key at the current position */
-			qsc_memutils_secure_erase(dkey->ktree + (ctr * SIAP_AUTHENTICATION_TOKEN_SIZE), SIAP_AUTHENTICATION_TOKEN_SIZE);
+			qsc_memutils_secure_erase(dkey->ktree + (((size_t)ctr) * SIAP_AUTHENTICATION_TOKEN_SIZE), SIAP_AUTHENTICATION_TOKEN_SIZE);
 			/* increment and write the new key index to the kid */
 			++ctr;
 			qsc_intutils_be32to8(dkey->kid + SIAP_DID_SIZE, ctr);
@@ -163,7 +205,7 @@ void siap_log_error(siap_errors emsg, const char* msg)
 {
 	SIAP_ASSERT(msg != NULL);
 
-	char mtmp[SIAP_ERROR_STRING_WIDTH * 2] = { 0 };
+	char mtmp[SIAP_ERROR_STRING_WIDTH * 2U] = { 0 };
 	const char* pmsg;
 
 	pmsg = siap_get_error_description(emsg);

@@ -86,7 +86,7 @@
 * \def SIAP_CONFIG_SIZE
 * \brief The size of the protocol configuration string.
 */
-#define SIAP_CONFIG_SIZE 26U
+#define SIAP_CONFIG_SIZE 24U
 
 /*!
 * \def SIAP_DEVICE_ID_SIZE
@@ -162,7 +162,7 @@
 * \def SIAP_KTREE_COUNT
 * \brief The SIAP key tree count.
 */
-#define SIAP_KTREE_COUNT 1024
+#define SIAP_KTREE_COUNT 1024U
 
 #if defined(SIAP_EXTENDED_ENCRYPTION)
 /*!
@@ -333,6 +333,16 @@ static const char SIAP_CONFIG_STRING[SIAP_CONFIG_SIZE + 1U] = "r02-siap-rcs256-k
 #endif
 
 /** \cond */
+#define SIAP_PASSHASH_LABEL_SIZE 15U
+#define SIAP_PASSVERIFY_LABEL_SIZE 19U
+#define SIAP_SEAL_LABEL_SIZE 16U
+#define SIAP_SEAL_INFO_SIZE (SIAP_SEAL_LABEL_SIZE + SIAP_KID_SIZE + SIAP_EXPIRATION_SIZE)
+
+static const char SIAP_PASSHASH_LABEL[SIAP_PASSHASH_LABEL_SIZE + 1U] = "SIAP-PHASH-SEED";
+static const char SIAP_PASSVERIFY_LABEL[SIAP_PASSVERIFY_LABEL_SIZE + 1U] = "SIAP-PHASH-VERIFIER";
+static const char SIAP_SEAL_LABEL[SIAP_SEAL_LABEL_SIZE + 1U] = "SIAP-RCS-SEAL-v1";
+
+
 #define SIAP_ERROR_STRING_DEPTH 13U
 #define SIAP_ERROR_STRING_WIDTH 128U
 
@@ -420,7 +430,7 @@ SIAP_EXPORT_API typedef struct siap_server_key
  * \param dkey A pointer to the output SIAP device key structure.
  * \param input [const] The input serialized device key array of size \c SIAP_DEVICE_KEY_ENCODED_SIZE.
  */
-SIAP_EXPORT_API void siap_deserialize_device_key(siap_device_key* dkey, const uint8_t* input);
+SIAP_EXPORT_API bool siap_deserialize_device_key(siap_device_key* dkey, const uint8_t* input, size_t inputlen);
 
 /**
  * \brief Serialize a client device key.
@@ -429,7 +439,7 @@ SIAP_EXPORT_API void siap_deserialize_device_key(siap_device_key* dkey, const ui
  * \param output The output byte array to hold the serialized device key array of size \c SIAP_DEVICE_KEY_ENCODED_SIZE.
  * \param dkey [const] A pointer to the input SIAP device key structure.
  */
-SIAP_EXPORT_API void siap_serialize_device_key(uint8_t* output, const siap_device_key* dkey);
+SIAP_EXPORT_API bool siap_serialize_device_key(uint8_t* output, size_t outputlen, const siap_device_key* dkey);
 
 /**
  * \brief Return a string description of an SIAP error code.
@@ -472,7 +482,7 @@ SIAP_EXPORT_API void siap_log_system_error(siap_errors err);
  * \param dtag A pointer to the output SIAP device tag structure.
  * \param input [const] The input serialized device tag array of size \c SIAP_DEVICE_TAG_ENCODED_SIZE.
  */
-SIAP_EXPORT_API void siap_deserialize_device_tag(siap_device_tag* dtag, const uint8_t* input);
+SIAP_EXPORT_API bool siap_deserialize_device_tag(siap_device_tag* dtag, const uint8_t* input, size_t inputlen);
 
 /**
  * \brief Serialize a device tag into a byte array.
@@ -481,7 +491,7 @@ SIAP_EXPORT_API void siap_deserialize_device_tag(siap_device_tag* dtag, const ui
  * \param output The output byte array to hold the serialized device tag of size \c SIAP_DEVICE_TAG_ENCODED_SIZE.
  * \param dtag [const] A pointer to the input SIAP device tag structure.
  */
-SIAP_EXPORT_API void siap_serialize_device_tag(uint8_t* output, const siap_device_tag* dtag);
+SIAP_EXPORT_API bool siap_serialize_device_tag(uint8_t* output, size_t outputlen, const siap_device_tag* dtag);
 
 /**
  * \brief Deserialize a server key from a byte array.
@@ -490,7 +500,7 @@ SIAP_EXPORT_API void siap_serialize_device_tag(uint8_t* output, const siap_devic
  * \param skey A pointer to the output SIAP server key structure.
  * \param input [const] The input serialized server key array of size \c SIAP_SERVER_KEY_ENCODED_SIZE.
  */
-SIAP_EXPORT_API void siap_deserialize_server_key(siap_server_key* skey, const uint8_t* input);
+SIAP_EXPORT_API bool siap_deserialize_server_key(siap_server_key* skey, const uint8_t* input, size_t inputlen);
 
 /**
  * \brief Serialize a server key into a byte array.
@@ -499,7 +509,7 @@ SIAP_EXPORT_API void siap_deserialize_server_key(siap_server_key* skey, const ui
  * \param output The output byte array to hold the serialized server key of size \c SIAP_SERVER_KEY_ENCODED_SIZE.
  * \param skey [const] A pointer to the input SIAP server key structure.
  */
-SIAP_EXPORT_API void siap_serialize_server_key(uint8_t* output, const siap_server_key* skey);
+SIAP_EXPORT_API bool siap_serialize_server_key(uint8_t* output, size_t outputlen, const siap_server_key* skey);
 
 /**
  * \brief Increment the device key
