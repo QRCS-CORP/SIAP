@@ -53,7 +53,6 @@ Every successful login burns exactly one leaf key. A burned leaf cannot be recov
 | [Summary Document](https://qrcs-corp.github.io/SIAP/pdf/siap_summary.pdf) | Protocol overview and design rationale |
 | [Protocol Specification](https://qrcs-corp.github.io/SIAP/pdf/siap_specification.pdf) | Formal message formats and state machine |
 | [Formal Analysis](https://qrcs-corp.github.io/SIAP/pdf/siap_formal.pdf) | Symbolic and computational security proofs |
-| [Implementation Analysis](https://qrcs-corp.github.io/SIAP/pdf/siap_analysis.pdf) | Code-level security review and notes |
 
 ---
 
