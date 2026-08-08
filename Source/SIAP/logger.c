@@ -93,7 +93,7 @@ void siap_logger_print(void)
 {
 	char buf[SIAP_LOGGING_MESSAGE_MAX + 1U] = { 0 };
 	size_t lctr;
-	size_t mlen;
+	int64_t mlen;
 
 	lctr = 0U;
 
@@ -107,7 +107,7 @@ void siap_logger_print(void)
 			if (mlen > 0U)
 			{
 				qsc_consoleutils_print_line(buf);
-				qsc_memutils_clear(buf, mlen);
+				qsc_memutils_clear(buf, (size_t)mlen);
 			}
 		} 
 		while (mlen > 0U);
